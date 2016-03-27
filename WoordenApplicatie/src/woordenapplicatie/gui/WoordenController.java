@@ -98,11 +98,6 @@ public class WoordenController implements Initializable {
         for (String s : splittedText) {
             set.add(s);
         }
-        ArrayList list = new ArrayList(set.size());
-
-        for (Object output : set) {
-            list.add(output);
-        }
         TreeSet test = new TreeSet(set);
         Iterator it = test.descendingIterator();
 
@@ -178,12 +173,13 @@ public class WoordenController implements Initializable {
             String[] splittedText = lines[j].split("[^a-zA-Z0-9-]+");
 
             for (int i = 0; i < splittedText.length; i++) {
+
                 if (hashmap.containsKey(splittedText[i])) {
-                    hashmap.get(splittedText[i]).add((j+1));
+                    hashmap.get(splittedText[i]).add(j+1);
                     hashmap.put(splittedText[i], hashmap.get(splittedText[i]));
                 } else {
                     TreeSet set = new TreeSet();
-                    set.add(j);
+                    set.add(j+ 1);
                     hashmap.put(splittedText[i], set);
                 }
             }
