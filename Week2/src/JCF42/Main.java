@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         Main m = new Main();
-        m.startLogic();
+        m.startLogic2();
     }
 
     public void startLogic() {
@@ -71,6 +71,55 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+    public void startLogic2(){
+        String input = "abcdefghijklmnopqrstuvwxyz";
+
+        char[] splittedText = input.toCharArray();
+        HashMap<Character, Integer> hashmap = new HashMap<>();
+
+        //add to hashmap and count how often it occurs
+        for (char text : splittedText) {
+            if (hashmap.containsKey(text)) {
+                hashmap.put(text, hashmap.get(text) + 1);
+            } else {
+                hashmap.put(text, 1);
+            }
+        }
+
+        //making a treemap that sorts on value
+        Comparator<Character> valueComparator =
+                new Comparator<Character>() {
+                    public int compare(Character k1, Character k2) {
+                        int compare =
+                                hashmap.get(k1).compareTo(hashmap.get(k2));
+                        if (compare == 0)
+                            return 1;
+                        else
+                            return compare;
+                    }
+                };
+        TreeMap<Character, Integer> sortedValues = new TreeMap<>(valueComparator);
+        sortedValues.putAll(hashmap);
+
+
+
+        HuffmanTree tree = buildTreeHashmap(sortedValues);
+
+        // print out results
+//        System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
+//        printCodes(tree, new StringBuffer());
+        Serializer s = new Serializer();
+        try {
+            s.saveToFile(tree,encode(tree, input));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            System.out.println(decode(s.readFromFile()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String encode(HuffmanTree tree, String text) throws Exception {
@@ -133,6 +182,27 @@ public class Main {
         for (int i = 0; i < charFreqs.length; i++)
             if (charFreqs[i] > 0)
                 trees.offer(new HuffmanLeaf(charFreqs[i], (char) i));
+
+        if (trees.size() > 0) {
+            // loop until there is only one tree left
+            while (trees.size() > 1) {
+                // two trees with least frequency
+                HuffmanTree a = trees.poll();
+                HuffmanTree b = trees.poll();
+
+                // put into new node and re-insert into queue
+                trees.offer(new HuffmanNode(a, b));
+            }
+        }
+        return trees.poll();
+    }
+    // input is an array of frequencies, indexed by character code
+    public HuffmanTree buildTreeHashmap(TreeMap<Character,Integer> charFreqs) {
+
+        PriorityQueue<HuffmanTree> trees = new PriorityQueue<HuffmanTree>();
+        for(Map.Entry e : charFreqs.entrySet()) {
+            trees.offer(new HuffmanLeaf((Integer) e.getValue(), (char) e.getKey()));
+        }
 
         if (trees.size() > 0) {
             // loop until there is only one tree left
