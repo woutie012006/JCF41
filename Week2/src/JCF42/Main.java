@@ -56,9 +56,7 @@ public class Main {
         // build tree
         HuffmanTree tree = buildTree(charFreqs);
 
-        // print out results
-//        System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
-//        printCodes(tree, new StringBuffer());
+
         Serializer s = new Serializer();
         try {
             s.saveToFile(tree,encode(tree, input));
@@ -73,7 +71,8 @@ public class Main {
 
     }
     public void startLogic2(){
-        String input = "abcdefghijklmnopqrstuvwxyz";
+//        String input = "abcdefghijklmnopqrstuvwxyz aaaaaaaaaaaaaaaaa";
+        String input = "Een kleine zin met wat karakters ";
 
         char[] splittedText = input.toCharArray();
         HashMap<Character, Integer> hashmap = new HashMap<>();
@@ -91,8 +90,8 @@ public class Main {
         Comparator<Character> valueComparator =
                 new Comparator<Character>() {
                     public int compare(Character k1, Character k2) {
-                        int compare =
-                                hashmap.get(k1).compareTo(hashmap.get(k2));
+                        int compare = hashmap.get(k1).compareTo(hashmap.get(k2));
+
                         if (compare == 0)
                             return 1;
                         else
@@ -106,17 +105,14 @@ public class Main {
 
         HuffmanTree tree = buildTreeHashmap(sortedValues);
 
-        // print out results
-//        System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
-//        printCodes(tree, new StringBuffer());
         Serializer s = new Serializer();
         try {
-            s.saveToFile(tree,encode(tree, input));
+            s.saveToFileBitset(tree,encode(tree, input), input);
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            System.out.println(decode(s.readFromFile()));
+            System.out.println(decode(s.readFromFileBitset()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,27 +144,33 @@ public class Main {
         String returnValue = "";
 
         HuffmanTree currentNode = tree;
+//        int counter2 = 0;
+        for (char c : text.toCharArray() ) {
 
-        for (char c : text.toCharArray()) {
-            if(currentNode instanceof HuffmanNode) {
-                if (c == '1') {
-                    currentNode = ((HuffmanNode) currentNode).right;
-                } else if (c == '0') {
-                    currentNode = ((HuffmanNode) currentNode).left;
-                }
-            }
-            else if (currentNode instanceof HuffmanLeaf) {
-                returnValue += ((HuffmanLeaf) currentNode).value;
-                currentNode = tree;
+            if( returnValue.length()<treeAndText.getTextLength()) {
 
-                if(currentNode instanceof HuffmanNode) {
+                if (currentNode instanceof HuffmanNode) {
                     if (c == '1') {
                         currentNode = ((HuffmanNode) currentNode).right;
                     } else if (c == '0') {
                         currentNode = ((HuffmanNode) currentNode).left;
                     }
+                } else if (currentNode instanceof HuffmanLeaf) {
+                    returnValue += ((HuffmanLeaf) currentNode).value;
+                    currentNode = tree;
+
+                    if (currentNode instanceof HuffmanNode) {
+                        if (c == '1') {
+                            currentNode = ((HuffmanNode) currentNode).right;
+                        } else if (c == '0') {
+                            currentNode = ((HuffmanNode) currentNode).left;
+                        }
+                    }
                 }
+
             }
+            counter2++;
+
         }
         return returnValue;
 
@@ -196,7 +198,7 @@ public class Main {
         }
         return trees.poll();
     }
-    // input is an array of frequencies, indexed by character code
+
     public HuffmanTree buildTreeHashmap(TreeMap<Character,Integer> charFreqs) {
 
         PriorityQueue<HuffmanTree> trees = new PriorityQueue<HuffmanTree>();
@@ -205,13 +207,10 @@ public class Main {
         }
 
         if (trees.size() > 0) {
-            // loop until there is only one tree left
             while (trees.size() > 1) {
-                // two trees with least frequency
                 HuffmanTree a = trees.poll();
                 HuffmanTree b = trees.poll();
 
-                // put into new node and re-insert into queue
                 trees.offer(new HuffmanNode(a, b));
             }
         }

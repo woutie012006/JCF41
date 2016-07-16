@@ -6,6 +6,11 @@ package JCF42.data;
 public class TreeAndText {
     HuffmanTree huffmanTree;
     String text;
+    int textLength;
+
+    public int getTextLength() {
+        return textLength;
+    }
 
     public String getText() {
         return text;
@@ -16,9 +21,10 @@ public class TreeAndText {
         return huffmanTree;
     }
 
-    public TreeAndText(HuffmanTree huffmanTree, String text) {
+    public TreeAndText(HuffmanTree huffmanTree, String text, int textLength) {
 
         this.huffmanTree = huffmanTree;
         this.text = text;
+        this.textLength = textLength;
     }
 }
